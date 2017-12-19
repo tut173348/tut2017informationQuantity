@@ -1,4 +1,4 @@
-package s4.b173348; // Please modify to s4.Bnnnnnn, where nnnnnn is your student ID. 
+package s4.b173348; // Please modify to s4.Bnnnnnn, where nnnnnn is your student ID.
 import java.lang.*;
 import s4.specification.*;
 
@@ -22,6 +22,12 @@ public class Frequencer implements FrequencerInterface{
     public void setTarget(byte [] target) { myTarget = target;}
     public void setSpace(byte []space) { mySpace = space; }
     public int frequency() {
+    if(myTarget == null || myTarget.length == 0) {
+      return -1;
+    }
+    if(mySpace == null || mySpace.length == 0) {
+      return 0;
+    }
 	int targetLength = myTarget.length;
 	int spaceLength = mySpace.length;
 	int count = 0;
@@ -36,7 +42,7 @@ public class Frequencer implements FrequencerInterface{
     }
 
     // I know that here is a potential problem in the declaration.
-    public int subByteFrequency(int start, int length) { 
+    public int subByteFrequency(int start, int length) {
 	// Not yet, but it is not currently used by anyone.
 	return -1;
     }
@@ -57,5 +63,4 @@ public class Frequencer implements FrequencerInterface{
 	    System.out.println("Exception occurred: STOP");
 	}
     }
-}	    
-	    
+}
