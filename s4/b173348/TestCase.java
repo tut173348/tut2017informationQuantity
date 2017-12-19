@@ -92,6 +92,13 @@ public class TestCase {
       freq = myObject.frequency();
       System.out.print("\"H\" in \"Hi Ho Hi Ho HiHi HOHO HHH ooo HHii HHoo\" appears "+freq+" times. ");
       if(15 == freq) { System.out.println("OK"); } else {System.out.println("WRONG"); }
+
+      //Testcase of "It is OK?"" in Frequencer.java
+      myObject.setSpace("Hi Ho Hi Ho".getBytes());
+      myObject.setTarget("Hi Ho ".getBytes()); //In this case, Array index out of bounds.
+      freq = myObject.frequency();
+      System.out.print("\"Hi Ho \" in \"Hi Ho Hi Ho\" appears "+freq+" times. ");
+      if(1 == freq) { System.out.println("OK"); } else {System.out.println("WRONG"); }
 	}
 	catch(Exception e) {
 	    System.out.println("Exception occurred: STOP");

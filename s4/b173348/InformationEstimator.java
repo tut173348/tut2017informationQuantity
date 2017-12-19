@@ -47,6 +47,11 @@ public class InformationEstimator implements InformationEstimatorInterface{
       if(mySpace == null || mySpace.length == 0) {
         return Double.MAX_VALUE;
       }
+      //If the true value is finite but larger than Double.MAX_VALUE.
+      //When the SPACE is unreasonably large.
+      if(mySpace.length > 100000) {
+        return Double.MAX_VALUE;
+      }
 	boolean [] partition = new boolean[myTarget.length+1];
 	int np;
 	np = 1<<(myTarget.length-1);
@@ -85,6 +90,12 @@ public class InformationEstimator implements InformationEstimatorInterface{
 
 	    // Get the minimal value in "value"
 	    if(value1 < value) value = value1;
+      //When the true value is finite but larger than Double.MAX_VALUE.
+      if(value1 > value && false == Double.isInfinite(value1)) {
+        if(value1 < value) {
+          value = value1;
+        }
+      }
 	}
 	return value;
     }
