@@ -41,6 +41,8 @@ public class Frequencer implements FrequencerInterface{
     // "i" < "o" : compare by code
     // "Hi" < "Ho" ; if head is same, compare the next element
     // "Ho" < "Ho " ; if the prefix is identical, longer string is big
+    //System.out.println("i = " + i);
+
 
     int si = suffixArray[i];
     int sj = suffixArray[j];
@@ -49,11 +51,26 @@ public class Frequencer implements FrequencerInterface{
     if(sj > s) s = sj;
     int n = mySpace.length - s;
     for(int k = 0; k < n; k++) {
-      if(mySpace[si + k] > mySpace[sj + k]) return 1;
-      if(mySpace[si + k] < mySpace[sj + k]) return -1;
+      if(mySpace[si + k] > mySpace[sj + k]) {return 1;}
+      if(mySpace[si + k] < mySpace[sj + k]) {return -1;}
     }
     if(si < sj) return 1;
     if(si > sj) return -1;
+
+    // int b = j;
+    // if(i > j) {
+    //   b = i;
+    // }
+    // for(int idx = 0; idx < mySpace.length - b; idx++) {
+    //   if(mySpace[i + idx] > mySpace[j + idx]) {
+    //     return 1;
+    //   }
+    //   if(mySpace[i + idx] < mySpace[j + idx]) {
+    //     return -1;
+    //   }
+    // }
+    // if(i < j) return 1;
+    // if(i > j) return -1;
 
     return 0;
   }
@@ -79,19 +96,46 @@ public class Frequencer implements FrequencerInterface{
     9:o
     A:o Hi Ho
     */
-    //
-    for(int i = 0; i < mySpace.length - 1; i++) {
-      for(int j = i + 1; j < mySpace.length; j++) {
-        int compare = suffixCompare(i, j);
-        if(compare == 1) {
-          int tmp = suffixArray[i];
-          suffixArray[i] = suffixArray[j];
-          suffixArray[j] = tmp;
-        }
-      }
-    }
+    //前回のSuffixArrayソート
+    // for(int i = 0; i < mySpace.length - 1; i++) {
+    //   for(int j = i + 1; j < mySpace.length; j++) {
+    //     int compare = suffixCompare(i, j);
+    //     if(compare == 1) {
+    //       int tmp = suffixArray[i];
+    //       suffixArray[i] = suffixArray[j];
+    //       suffixArray[j] = tmp;
+    //     }
+    //   }
+    // }
+    quick_sort(suffixArray, 0, suffixArray.length - 1);
     printSuffixArray();
   }
+
+  public void quick_sort(int[] sortArray, int suffixLeft, int suffixRight) {
+    if(suffixLeft >= suffixRight) {
+      return;
+    }
+    int pivot = (suffixLeft + suffixRight) / 2 + (suffixLeft + suffixRight) % 2;
+    int sortL = suffixLeft;
+    int sortR = suffixRight;
+    int tmp;
+
+    //System.out.println("sortArray[" + sortL + "] = " + sortArray[sortL]);
+    while(true) {
+      while(suffixCompare(sortL, pivot) == -1) { sortL++; }
+      while(suffixCompare(sortR, pivot) == 1) { sortR--; }
+
+      if(sortL > sortR) { break; }
+      tmp = sortArray[sortL];
+      sortArray[sortL] = sortArray[sortR];
+      sortArray[sortR] = tmp;
+      sortL++;
+      sortR--;
+    }
+    quick_sort(sortArray, suffixLeft, sortR);
+    quick_sort(sortArray, sortL, suffixRight);
+  }
+
   private int targetCompare(int i, int start, int end) {
     //start is specified in subByteStartIndex, and subByteEndIndex
     //target_start_end is subByte(start, end) of target
@@ -130,32 +174,47 @@ public class Frequencer implements FrequencerInterface{
 
     return 0;
   }
+
+  //binary search
+  public int binary_search(int binaryStart, int binaryEnd, int targetStart, int targetEnd, int targetNum) {
+    int middle = (binaryStart + binaryEnd) / 2 + (binaryStart + binaryEnd) % 2;
+    if(middle == 0) {
+      if(targetCompare(middle, binaryStart, binaryEnd) == targetNum) {
+        return middle;
+      }
+      return middle + targetNum;
+    }
+
+    if(binaryStart >= binaryEnd) {
+      if(middle == suffixArray.length - 1 && targetCompare(middle - 1, targetStart, targetEnd) == targetNum - 1) {
+        return middle + targetNum;
+      }
+      return middle;
+    }
+
+    if(targetCompare(middle - 1, targetStart, targetEnd) >= targetNum && targetCompare(middle, targetStart, targetEnd) >= targetNum) {
+      return binary_search(binaryStart, middle - 1, targetStart, targetEnd, targetNum);
+    }else if(targetCompare(middle - 1, targetStart, targetEnd) < targetNum && targetCompare(middle, targetStart, targetEnd) < targetNum) {
+      return binary_search(middle + 1, binaryEnd, targetStart, targetEnd, targetNum);
+    }
+    return middle;
+  }
+
   private int subByteStartIndex(int start, int end) {
     // It returns the index of the first suffix which is equal or greater than subBytes;
     // not implemented yet;
     // For "Ho", it will return 5 for "Hi Ho Hi Ho".
     // For "Ho ", it will return 6 for "Hi Ho Hi Ho".
 
-    for(int i = 0; i < mySpace.length; i++) {
-      if(targetCompare(i, start, end) == 0) {
-        return i;
-      }
-    }
-
-    return suffixArray.length;
+    return binary_search(0, suffixArray.length - 1, start, end, 0);
   }
+
   private int subByteEndIndex(int start, int end) {
     // It returns the next index of the first suffix which is greater than subBytes;
     // not implemented yet
     // For "Ho", it will return 7 for "Hi Ho Hi Ho".
     // For "Ho ", it will return 7 for "Hi Ho Hi Ho".
-
-    for(int i = 0; i < mySpace.length; i++) {
-      if(targetCompare(i, start, end) == 1) {
-        return i;
-      }
-    }
-    return suffixArray.length;
+    return binary_search(0, suffixArray.length - 1, start, end, 1);
   }
   public int subByteFrequency(int start, int end) {
     // This method could be defined as follows though it is slow.
@@ -168,7 +227,7 @@ public class Frequencer implements FrequencerInterface{
       }
       if(abort == false) { count++; }
     }
-
+    System.out.println("SPACE LENGTH = " + spaceLength);
     int first = subByteStartIndex(start,end);
     int last1 = 0;
     if(first == suffixArray.length){
@@ -194,6 +253,7 @@ public class Frequencer implements FrequencerInterface{
   public static void main(String[] args) {
     Frequencer frequencerObject;
     try {
+      long timeStart = System.currentTimeMillis();
       frequencerObject = new Frequencer();
       frequencerObject.setSpace("Hi Ho Hi Ho".getBytes());
       frequencerObject.setTarget("H".getBytes());
@@ -201,6 +261,8 @@ public class Frequencer implements FrequencerInterface{
       System.out.print("\nFreq = "+ result+" ");
       if(4 == result) { System.out.println("OK"); }
       else {System.out.println("WRONG"); }
+      long timeEnd = System.currentTimeMillis();
+      System.out.println((timeEnd - timeStart) + "ms");
     }
     catch(Exception e) {
       System.out.println("STOP");
