@@ -76,7 +76,9 @@ public class Frequencer implements FrequencerInterface{
   }
 
   public void setSpace(byte []space) {
-    mySpace = space; if(mySpace.length>0) spaceReady = true;
+    mySpace = space;
+    if(mySpace == null || mySpace.length == 0) { return; }
+    if(mySpace.length>0) spaceReady = true;
     suffixArray = new int[space.length];
     // put all suffixes in suffixArray. Each suffix is expressed by one interger.
     for(int i = 0; i< space.length; i++) {
@@ -97,29 +99,37 @@ public class Frequencer implements FrequencerInterface{
     A:o Hi Ho
     */
     quick_sort(suffixArray, 0, suffixArray.length - 1);
-    printSuffixArray();
+    //printSuffixArray();
   }
 
   public void quick_sort(int[] sortArray, int suffixLeft, int suffixRight) {
     if(suffixLeft >= suffixRight) {
       return;
     }
-    int pivot = (suffixLeft + suffixRight) / 2 + (suffixLeft + suffixRight) % 2;
+    int pivot_idx = (suffixLeft + suffixRight) / 2 + (suffixLeft + suffixRight) % 2;
     int sortL = suffixLeft;
     int sortR = suffixRight;
     int tmp;
 
-    while(true) {
-      while(suffixCompare(sortL, pivot) == -1) { sortL++; }
-      while(suffixCompare(sortR, pivot) == 1) { sortR--; }
+    while(sortL <= sortR) { //調べているSuffixの左側が右側を超えたら抜ける
+      while(suffixCompare(sortL, pivot_idx) == -1) { sortL++; }
+      while(suffixCompare(sortR, pivot_idx) == 1) { sortR--; }
 
-      if(sortL > sortR) { break; }
-      tmp = sortArray[sortL];
-      sortArray[sortL] = sortArray[sortR];
-      sortArray[sortR] = tmp;
-      sortL++;
-      sortR--;
+      if(sortL <= sortR) {
+        if(pivot_idx == sortL) {
+          pivot_idx = sortR;  //pivot_idxはインデックスなので，直接中身を渡しているわけではないため，ここでインデックスを変える
+        }
+        else if(pivot_idx == sortR) {
+          pivot_idx = sortL;  //上記のインデックスの関係と同様
+        }
+        tmp = sortArray[sortL];
+        sortArray[sortL] = sortArray[sortR];
+        sortArray[sortR] = tmp;
+        sortL++;
+        sortR--;
+      }
     }
+    //再帰呼び出し
     quick_sort(sortArray, suffixLeft, sortR);
     quick_sort(sortArray, sortL, suffixRight);
   }
@@ -168,18 +178,18 @@ public class Frequencer implements FrequencerInterface{
     int middle = (binaryStart + binaryEnd) / 2 + (binaryStart + binaryEnd) % 2;
     if(middle == 0) {
       if(targetCompare(middle, binaryStart, binaryEnd) == targetNum) {
-        return middle;
+        return middle;  //先頭まで探索が行われた場合の処理
       }
       return middle + targetNum;
     }
 
     if(binaryStart >= binaryEnd) {
       if(middle == suffixArray.length - 1 && targetCompare(middle - 1, targetStart, targetEnd) == targetNum - 1) {
-        return middle + targetNum;
+        return middle + targetNum;  //終端まで探索が行われた場合の処理
       }
       return middle;
     }
-
+    //再帰呼び出し
     if(targetCompare(middle - 1, targetStart, targetEnd) >= targetNum && targetCompare(middle, targetStart, targetEnd) >= targetNum) {
       return binary_search(binaryStart, middle - 1, targetStart, targetEnd, targetNum);
     }else if(targetCompare(middle - 1, targetStart, targetEnd) < targetNum && targetCompare(middle, targetStart, targetEnd) < targetNum) {
@@ -230,9 +240,13 @@ public class Frequencer implements FrequencerInterface{
     return last1 - first;
   }
   public void setTarget(byte [] target) {
-    myTarget = target; if(myTarget.length>0) targetReady = true;
+    myTarget = target;
+    if(myTarget == null || myTarget.length == 0) { return; }
+    if(myTarget.length>0) targetReady = true;
   }
   public int frequency() {
+    if(myTarget == null || myTarget.length == 0) { return -1; }
+    if(mySpace == null || mySpace.length == 0) { return 0; }
     if(targetReady == false) return -1;
     if(spaceReady == false) return 0;
     return subByteFrequency(0, myTarget.length);
