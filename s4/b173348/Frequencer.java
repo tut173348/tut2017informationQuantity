@@ -96,17 +96,6 @@ public class Frequencer implements FrequencerInterface{
     9:o
     A:o Hi Ho
     */
-    //前回のSuffixArrayソート
-    // for(int i = 0; i < mySpace.length - 1; i++) {
-    //   for(int j = i + 1; j < mySpace.length; j++) {
-    //     int compare = suffixCompare(i, j);
-    //     if(compare == 1) {
-    //       int tmp = suffixArray[i];
-    //       suffixArray[i] = suffixArray[j];
-    //       suffixArray[j] = tmp;
-    //     }
-    //   }
-    // }
     quick_sort(suffixArray, 0, suffixArray.length - 1);
     printSuffixArray();
   }
@@ -120,7 +109,6 @@ public class Frequencer implements FrequencerInterface{
     int sortR = suffixRight;
     int tmp;
 
-    //System.out.println("sortArray[" + sortL + "] = " + sortArray[sortL]);
     while(true) {
       while(suffixCompare(sortL, pivot) == -1) { sortL++; }
       while(suffixCompare(sortR, pivot) == 1) { sortR--; }
@@ -227,7 +215,6 @@ public class Frequencer implements FrequencerInterface{
       }
       if(abort == false) { count++; }
     }
-    System.out.println("SPACE LENGTH = " + spaceLength);
     int first = subByteStartIndex(start,end);
     int last1 = 0;
     if(first == suffixArray.length){
@@ -253,7 +240,6 @@ public class Frequencer implements FrequencerInterface{
   public static void main(String[] args) {
     Frequencer frequencerObject;
     try {
-      long timeStart = System.currentTimeMillis();
       frequencerObject = new Frequencer();
       frequencerObject.setSpace("Hi Ho Hi Ho".getBytes());
       frequencerObject.setTarget("H".getBytes());
@@ -261,8 +247,6 @@ public class Frequencer implements FrequencerInterface{
       System.out.print("\nFreq = "+ result+" ");
       if(4 == result) { System.out.println("OK"); }
       else {System.out.println("WRONG"); }
-      long timeEnd = System.currentTimeMillis();
-      System.out.println((timeEnd - timeStart) + "ms");
     }
     catch(Exception e) {
       System.out.println("STOP");
