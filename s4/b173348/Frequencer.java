@@ -77,8 +77,12 @@ public class Frequencer implements FrequencerInterface{
 
   public void setSpace(byte []space) {
     mySpace = space;
-    if(mySpace == null || mySpace.length == 0) { return; }
-    if(mySpace.length>0) spaceReady = true;
+    if(mySpace == null || mySpace.length == 0) {
+      spaceReady = false;
+      return;
+    } else if(mySpace.length>0) {
+      spaceReady = true;
+    }
     suffixArray = new int[space.length];
     // put all suffixes in suffixArray. Each suffix is expressed by one interger.
     for(int i = 0; i< space.length; i++) {
@@ -241,12 +245,17 @@ public class Frequencer implements FrequencerInterface{
   }
   public void setTarget(byte [] target) {
     myTarget = target;
-    if(myTarget == null || myTarget.length == 0) { return; }
-    if(myTarget.length>0) targetReady = true;
+    if(myTarget == null || myTarget.length == 0) {
+      targetReady = false;
+      //return;
+    }
+    else if(myTarget.length>0) {
+      targetReady = true;
+    }
   }
   public int frequency() {
-    if(myTarget == null || myTarget.length == 0) { return -1; }
-    if(mySpace == null || mySpace.length == 0) { return 0; }
+    //if(myTarget == null || myTarget.length == 0) { return -1; }
+    //if(mySpace == null || mySpace.length == 0) { return 0; }
     if(targetReady == false) return -1;
     if(spaceReady == false) return 0;
     return subByteFrequency(0, myTarget.length);

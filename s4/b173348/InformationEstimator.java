@@ -42,14 +42,16 @@ double iq(int freq) {
 
 public void setTarget(byte [] target) {
   myTarget = target;
-  if(myTarget == null || myTarget.length == 0) { targetReady = false; }
-  else if(target.length>0) targetReady = true;
+  if(myTarget == null || myTarget.length == 0) {
+    targetReady = false;
+  } else if(target.length>0){ targetReady = true; }
 }
 public void setSpace(byte []space) {
   myFrequencer = new Frequencer();
   mySpace = space;
-  if(mySpace == null || mySpace.length == 0) { spaceReady = false; }
-  else{
+  if(mySpace == null || mySpace.length == 0) {
+    spaceReady = false;
+  } else{
     myFrequencer.setSpace(space);
     spaceReady = true;
   }
